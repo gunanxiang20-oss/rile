@@ -28,6 +28,7 @@ jobs:
           pip install buildozer cython==0.29.36
 
       - name: Build APK
+        working-directory: ./calapp
         run: |
           yes | buildozer android debug
 
@@ -35,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cal-toolbox-apk
-          path: bin/*.apk
+          path: calapp/bin/*.apk
