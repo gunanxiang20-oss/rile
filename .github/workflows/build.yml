@@ -6,10 +6,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 核心：开启 4G 虚拟内存，防止编译时内存溢出
       - name: Enable Swap Space
         run: |
-          sudo fallocate -l 4G /swapfile
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
           sudo chmod 600 /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
