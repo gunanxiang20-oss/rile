@@ -53,4 +53,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cal-toolbox-release-apk
-          path: calapp/bin/*-release.apk
+          path: bin/*-release.apk
