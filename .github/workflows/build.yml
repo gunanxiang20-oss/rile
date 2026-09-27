@@ -53,23 +53,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cal-toolbox-release-apk
-          path: calapp/bin/*-release.apk        working-directory: ./calapp
-        run: |
-          keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
-
-      # 新增：带重试机制的构建命令，防止网络抖动导致的404
-      - name: Build Release APK
-        working-directory: ./calapp
-        run: |
-          for i in 1 2 3; do
-            echo "===== 尝试构建 第 $i 次 ====="
-            timeout 30m bash -c "yes | buildozer android release" && break
-            echo "构建失败，30秒后重试..."
-            sleep 30
-          done
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: cal-toolbox-release-apk
           path: calapp/bin/*-release.apk
