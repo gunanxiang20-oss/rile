@@ -29,20 +29,25 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev openjdk-11-jdk unzip automake autoconf libtool pkg-config zlib1g-dev libncurses5-dev libtinfo5 cmake apksigner
+          sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev python3-pip python3-setuptools openjdk-11-jdk unzip automake autoconf libtool pkg-config zlib1g-dev libncurses5-dev libtinfo5 cmake apksigner
           python -m pip install --upgrade pip
-          python -m pip install buildozer cython
+          python -m pip install buildozer cython==0.29.36
 
-      # 新增：自动生成签名密钥库
       - name: Create Keystore
         working-directory: ./calapp
         run: |
           keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
 
+      # 新增：带重试机制的构建命令，防止网络抖动导致的404
       - name: Build Release APK
         working-directory: ./calapp
         run: |
-          yes | buildozer android release
+          for i in 1 2 3; do
+            echo "===== 尝试构建 第 $i 次 ====="
+            timeout 30m bash -c "yes | buildozer android release" && break
+            echo "构建失败，30秒后重试..."
+            sleep 30
+          done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
