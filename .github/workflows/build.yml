@@ -16,15 +16,10 @@ jobs:
           sudo swapon /swapfile
           sudo swapon --show
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-
-      - name: Force Python 3.10
-        run: |
-          sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-          python --version
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -35,6 +30,30 @@ jobs:
 
       - name: Create Keystore
         working-directory: ./calapp
+        run: |
+          keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
+
+      # 新增：在构建前清理可能残留的缓存，避免调用旧的错误编译产物
+      - name: Clean .buildozer Cache
+        working-directory: ./calapp
+        run: |
+          rm -rf .buildozer
+
+      - name: Build Release APK
+        working-directory: ./calapp
+        run: |
+          for i in 1 2 3; do
+            echo "===== 尝试构建 第 $i 次 ====="
+            timeout 30m bash -c "yes | buildozer android release" && break
+            echo "构建失败，30秒后重试..."
+            sleep 30
+          done
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cal-toolbox-release-apk
+          path: calapp/bin/*-release.apk        working-directory: ./calapp
         run: |
           keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
 
