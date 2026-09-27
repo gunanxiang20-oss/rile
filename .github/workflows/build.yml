@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Release APK
 on: [push]
 jobs:
   build-android:
@@ -21,20 +21,31 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Force Python 3.10
+        run: |
+          sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+          python --version
+
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev openjdk-11-jdk unzip automake autoconf libtool pkg-config zlib1g-dev libncurses5-dev libtinfo5 cmake
+          sudo apt-get install -y build-essential ccache git libffi-dev libssl-dev python3-dev openjdk-11-jdk unzip automake autoconf libtool pkg-config zlib1g-dev libncurses5-dev libtinfo5 cmake apksigner
           python -m pip install --upgrade pip
           python -m pip install buildozer cython
 
-      - name: Build APK
+      # 新增：自动生成签名密钥库
+      - name: Create Keystore
         working-directory: ./calapp
         run: |
-          yes | buildozer android debug
+          keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
+
+      - name: Build Release APK
+        working-directory: ./calapp
+        run: |
+          yes | buildozer android release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: cal-toolbox-apk
-          path: calapp/bin/*.apk
+          name: cal-toolbox-release-apk
+          path: calapp/bin/*-release.apk
