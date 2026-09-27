@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*.jpg,assets/*.png
 version = 1.0
-requirements = python3,kivy==2.2.1,requests,urllib3,chardet,idna
+requirements = python3,kivy==2.3.1,requests,urllib3,chardet,idna
 orientation = portrait
 fullscreen = 0
 android.permissions = INTERNET,ACCESS_NETWORK_STATE
