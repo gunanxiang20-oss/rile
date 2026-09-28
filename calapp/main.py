@@ -1,5 +1,3 @@
-
-
 import os, datetime, threading, webbrowser, requests
 from kivy.app import App
 from kivy.clock import Clock
@@ -77,6 +75,7 @@ class CalendarApp(App):
             self.date_label.text = f"📅 {date_str}"
             self.time_label.text = f"🕒 {time_str}"
             self.weather_label.text = f"🌤️ {weather_str}"
+
     def show_about(self, *args):
         self.content_area.clear_widgets()
         self.about_click_count = 0
@@ -148,6 +147,7 @@ class CalendarApp(App):
     def try_open_qq(self):
         try: webbrowser.open("mqqwpa://im/chat?chat_type=wpa&uin=44521667&version=1&src_type=web")
         except: pass
+
     def show_me(self, *args):
         self.content_area.clear_widgets()
         layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(15))
@@ -282,7 +282,7 @@ class CalendarApp(App):
         layout.add_widget(Label(text="设置星期 (最高 8)："))
         week_input = TextInput(text="8", input_filter='int', multiline=False)
         layout.add_widget(week_input)
-        confirm_btn = Button(text="生成选项卡", size_hint_y=None, height=d
+        confirm_btn = Button(text="生成选项卡", size_hint_y=None, height=dp(50), background_color=(0.3, 0.6, 1, 1))
         popup = Popup(title="自定义时间", content=layout, size_hint=(0.9, 0.8))
         def create_tab(instance):
             year, month, day, week = year_input.text or "2026", month_input.text or "1", day_input.text or "1", week_input.text or "1"
