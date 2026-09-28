@@ -34,7 +34,7 @@ class CalendarApp(App):
         self.main_layout.add_widget(self.content_area)
 
         dock = BoxLayout(size_hint_y=None, height=dp(60), spacing=dp(5), padding=dp(5))
-        dock.add_widget(Button(text="主页", background_color=(0.4, 0.6, 0.9, 1), on_release=self.show_home))
+        dock.add_widget(Button(text="首页", background_color=(0.4, 0.6, 0.9, 1), on_release=self.show_home))
         dock.add_widget(Button(text="我", background_color=(0.4, 0.6, 0.9, 1), on_release=self.show_me))
         self.main_layout.add_widget(dock)
 
@@ -64,8 +64,8 @@ class CalendarApp(App):
         try:
             loc_resp = requests.get("http://ip-api.com/json/", timeout=5).json()
             if loc_resp.get("status") == "success": city = loc_resp.get("city", "未知")
-        except: city = "定位失败"
-        weather_str = "天气获取失败"
+        except: city = "没有定位，人家要闹啦"
+        weather_str = "怎么失败了，不开心"
         try:
             weather_resp = requests.get("https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true", timeout=5).json()
             weather_str = f"{city} | {weather_resp['current_weather']['temperature']}°C"
@@ -83,14 +83,14 @@ class CalendarApp(App):
         self.about_click_count = 0
         layout = BoxLayout(orientation='vertical', padding=dp(20))
         layout.add_widget(Label(size_hint_y=None, height=dp(50)))
-        app_name = Label(text="日历工具箱", font_size=dp(32), bold=True, size_hint_y=None, height=dp(60))
+        app_name = Label(text="日历仙人", font_size=dp(36), bold=True, size_hint_y=None, height=dp(60))
         layout.add_widget(app_name)
-        layout.add_widget(Label(text="宫本，_____。", font_size=dp(16), color=(0.4, 0.4, 0.4, 1), size_hint_y=None, height=dp(30)))
+        layout.add_widget(Label(text="宫本，我____。", font_size=dp(16), color=(0.4, 0.4, 0.4, 1), size_hint_y=None, height=dp(30)))
         contact_btn = Button(text="联系作者", size_hint_y=None, height=dp(50), background_color=(0.3, 0.6, 0.9, 1))
         contact_btn.bind(on_release=self.handle_contact_author)
         layout.add_widget(contact_btn)
         layout.add_widget(Label(size_hint_y=None, height=dp(10)))
-        layout.add_widget(Label(text="版本 0.1", font_size=dp(14), color=(0.5, 0.5, 0.5, 1), size_hint_y=None, height=dp(30)))
+        layout.add_widget(Label(text="版本 1.14514", font_size=dp(14), color=(0.5, 0.5, 0.5, 1), size_hint_y=None, height=dp(30)))
         app_name.bind(on_touch_down=self.on_about_touch)
         self.content_area.add_widget(layout)
 
@@ -181,7 +181,7 @@ class CalendarApp(App):
 
     def edit_profile_dialog(self, instance):
         layout = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(5))
-        layout.add_widget(Label(text="输入新昵称 (最多14字符或8个汉字，不能有空格)："))
+        layout.add_widget(Label(text="输入新昵称 (最多14字符或8个汉字，不准打空格，不然不给改😣)："))
         nickname_input = TextInput(text=self.user_data["nickname"], multiline=False)
         layout.add_widget(nickname_input)
         layout.add_widget(Label(text="头像路径 (可留空)"))
@@ -192,13 +192,13 @@ class CalendarApp(App):
         def save_profile(instance):
             new_nickname = nickname_input.text.strip()
             if " " in new_nickname or len(new_nickname) > 14:
-                self.show_toast("昵称不规范！不能有空格，且最长14字符")
+                self.show_toast("你不乘哦，都说不准打空格啦！！且最长14字符！！")
                 return
             self.user_data["nickname"] = new_nickname if new_nickname else self.user_data["nickname"]
             if avatar_input.text.strip(): self.user_data["avatar"] = avatar_input.text.strip()
             popup.dismiss()
             self.show_me()
-            self.show_toast("资料已保存")
+            self.show_toast("保存好了：）")
         confirm_btn.bind(on_release=save_profile)
         layout.add_widget(confirm_btn)
         popup.open()
@@ -215,7 +215,7 @@ class CalendarApp(App):
                 self.user_data["signature"] = sig_input.text.strip()
                 popup.dismiss()
                 self.show_me()
-                self.show_toast("签名已保存")
+                self.show_toast("保存好了：）")
             confirm_btn.bind(on_release=save_sig)
             layout.add_widget(confirm_btn)
             popup.open()
@@ -232,7 +232,7 @@ class CalendarApp(App):
             if os.path.exists(path):
                 self.bg_image.source = path
                 self.show_toast("背景已应用")
-            else: self.show_toast("文件不存在，请检查路径")
+            else: self.show_toast("都没有文件，人家怎么上传：（")
             popup.dismiss()
         apply_btn.bind(on_release=apply_bg)
         layout.add_widget(apply_btn)
