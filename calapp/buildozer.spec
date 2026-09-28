@@ -4,7 +4,7 @@ package.name = rilixianren
 package.domain = com.android
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf
-source.include_patterns = assets/*.jpg,assets/*.png
+source.include_patterns = assets/*.jpg,assets/*.png,saaets/*.ttf
 version = 1.0
 requirements = python3,kivy==2.3.1,requests,urllib3,chardet,idna
 orientation = portrait
