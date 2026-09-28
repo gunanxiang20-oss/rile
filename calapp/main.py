@@ -1,4 +1,6 @@
 import os, datetime, threading, webbrowser, requests
+from kivy.core.text import LabelBase
+Labelbase.register(name='roboto',fn_regular='assets/chinese_font.ttf')
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.clipboard import Clipboard
