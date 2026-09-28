@@ -33,7 +33,6 @@ jobs:
         run: |
           keytool -genkeypair -v -keystore my-release-key.keystore -alias my-alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 44521667 -keypass 44521667 -dname "CN=CalendarToolbox, OU=Dev, O=Personal, L=City, S=State, C=CN"
 
-      # 新增：在构建前清理可能残留的缓存，避免调用旧的错误编译产物
       - name: Clean .buildozer Cache
         working-directory: ./calapp
         run: |
@@ -41,16 +40,23 @@ jobs:
 
       - name: Build Release APK
         working-directory: ./calapp
+        # 关键修改：去掉重试循环，如果失败直接报错退出，不掩饰问题
         run: |
-          for i in 1 2 3; do
-            echo "===== 尝试构建 第 $i 次 ====="
-            timeout 30m bash -c "yes | buildozer android release" && break
-            echo "构建失败，30秒后重试..."
-            sleep 30
-          done
+          buildozer android release
+
+      # 关键新增：在上传前，打印出 bin 目录里的所有文件，看看它到底生成了什么！
+      - name: Debug - List built files
+        working-directory: ./calapp
+        run: |
+          echo "===== 查看 calapp/bin/ 目录下生成了什么文件 ====="
+          ls -lh bin/
+          echo "===== 查看 calapp/bin/ 下的 APK 文件 ====="
+          find bin/ -name "*.apk" -ls
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: cal-toolbox-release-apk
-          path: "**/*.apk"
+          # 关键修改：使用绝对明确的路径，如果找不到直接报错提示
+          path: calapp/bin/*.apk
+          if-no-files-found: error
